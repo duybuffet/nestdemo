@@ -2,6 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class RolesService {
@@ -33,5 +38,12 @@ export class RolesService {
   async delete(id: number): Promise<DeleteResult> {
     this.logger.log('Deleting role');
     return await this.roleRepository.delete(id);
+  }
+
+  async paginate(options: IPaginationOptions): Promise<Pagination<Role>> {
+    const queryBuilder = this.roleRepository.createQueryBuilder('c');
+    queryBuilder.orderBy('c.id', 'ASC');
+
+    return paginate<Role>(queryBuilder, options);
   }
 }

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Role } from './role.entity';
 import { RolesService } from './roles.service';
 import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiTags('roles')
 @Controller('roles')
@@ -14,8 +15,15 @@ export class RolesController {
     type: Role,
     isArray: true
   })
-  index(): Promise<Role[]> {
-    return this.rolesService.findAll();
+  index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<Role>> {
+    limit = limit > 25 ? 25 : limit;
+    return this.rolesService.paginate({
+      page,
+      limit,
+    });
   }
 
   @Get(':id')
