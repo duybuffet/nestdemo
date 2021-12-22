@@ -21,14 +21,14 @@ export class RolesService {
     return await this.roleRepository.findOne(id, { withDeleted: true });
   }
 
-  async create(role: Role): Promise<Role> {
+  async create(role: any): Promise<Role> {
     this.logger.log('Creating role');
     return await this.roleRepository.save(role);
   }
 
-  async update(role: Role): Promise<UpdateResult> {
+  async update(id: number, role: any): Promise<UpdateResult> {
     this.logger.log('Updating role');
-    return await this.roleRepository.update(role.id, role);
+    return await this.roleRepository.update(id, role);
   }
 
   async delete(id: number): Promise<DeleteResult> {

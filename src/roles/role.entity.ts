@@ -11,12 +11,15 @@ export class Role {
   @Column()
   name: string;
 
+  @ApiProperty()
   @CreateDateColumn()
   created!: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updated!: Date;
 
+  @ApiProperty()
   @DeleteDateColumn()
   deletedAt?: Date;
 }

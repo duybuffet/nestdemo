@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query } from '@nestjs/common';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { UpsertRoleDto } from './dto/upsert-role.dto';
 import { Role } from './role.entity';
 import { RolesService } from './roles.service';
-import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiTags('roles')
@@ -14,6 +14,16 @@ export class RolesController {
   @ApiOkResponse({
     type: Role,
     isArray: true
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false
   })
   index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
@@ -35,7 +45,7 @@ export class RolesController {
     required: true,
     type: 'number'
   })
-  show(@Param('id') id): Promise<Role> {
+  show(@Param('id', new ParseIntPipe()) id): Promise<Role> {
     return this.rolesService.findOne(id);
   }
 
@@ -44,8 +54,9 @@ export class RolesController {
     description: 'The record has been successfully created.',
     type: Role,
   })
-  create(@Body() role: Role): Promise<Role> {
-    return this.rolesService.create(role);
+  @UsePipes(new ValidationPipe())
+  create(@Body() roleDto: UpsertRoleDto): Promise<Role> {
+    return this.rolesService.create(roleDto);
   }
 
   @Put(':id')
@@ -57,9 +68,9 @@ export class RolesController {
   @ApiResponse({
     status: 200
   })
-  update(@Param('id') id: number, @Body() role: Role): Promise<any> {
-    role.id = id;
-    return this.rolesService.update(role);
+  @UsePipes(new ValidationPipe())
+  update(@Param('id', new ParseIntPipe()) id, @Body() roleDto: UpsertRoleDto): Promise<any> {
+    return this.rolesService.update(id, roleDto);
   }
 
   @Delete(':id')
@@ -68,7 +79,7 @@ export class RolesController {
     required: true,
     type: 'number'
   })
-  delete(@Param('id') id): Promise<any> {
+  delete(@Param('id', new ParseIntPipe()) id): Promise<any> {
     return this.rolesService.delete(id);
   }
 }
