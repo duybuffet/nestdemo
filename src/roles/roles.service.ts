@@ -16,13 +16,9 @@ export class RolesService {
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
   ) {}
-
-  async findAll(): Promise<Role[]> {
-    return await this.roleRepository.find();
-  }
   
   async findOne(id: number): Promise<Role> {
-    return await this.roleRepository.findOne(id);
+    return await this.roleRepository.findOne(id, { withDeleted: true });
   }
 
   async create(role: Role): Promise<Role> {
@@ -37,12 +33,12 @@ export class RolesService {
 
   async delete(id: number): Promise<DeleteResult> {
     this.logger.log('Deleting role');
-    return await this.roleRepository.delete(id);
+    return await this.roleRepository.softDelete(id);
   }
 
   async paginate(options: IPaginationOptions): Promise<Pagination<Role>> {
-    const queryBuilder = this.roleRepository.createQueryBuilder('c');
-    queryBuilder.orderBy('c.id', 'ASC');
+    const queryBuilder = this.roleRepository.createQueryBuilder('r');
+    queryBuilder.orderBy('r.id', 'ASC');
 
     return paginate<Role>(queryBuilder, options);
   }
