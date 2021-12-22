@@ -4,9 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger.middleware';
 import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), RolesModule],
+  imports: [TypeOrmModule.forRoot(), RolesModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })

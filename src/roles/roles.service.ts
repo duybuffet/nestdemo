@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
-import { Repository, UpdateResult, DeleteResult } from 'typeorm';
+import { Repository, UpdateResult, DeleteResult, In } from 'typeorm';
 import {
   paginate,
   Pagination,
@@ -18,7 +18,7 @@ export class RolesService {
   ) {}
   
   async findOne(id: number): Promise<Role> {
-    return await this.roleRepository.findOne(id, { withDeleted: true });
+    return await this.roleRepository.findOne(id);
   }
 
   async create(role: any): Promise<Role> {
@@ -41,5 +41,9 @@ export class RolesService {
     queryBuilder.orderBy('r.id', 'ASC');
 
     return paginate<Role>(queryBuilder, options);
+  }
+
+  async isAllExists(ids: any[]): Promise<boolean> {
+    return await this.roleRepository.count({ id: In(ids) }) === ids.length;
   }
 }
