@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { NotFoundException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository, UpdateResult, DeleteResult, In } from 'typeorm';
@@ -18,7 +18,11 @@ export class RolesService {
   ) {}
   
   async findOne(id: number): Promise<Role> {
-    return await this.roleRepository.findOne(id);
+    let role = await this.roleRepository.findOne(id)
+    if (!role) {
+      throw new NotFoundException('Role is not existed');
+    }
+    return role;
   }
 
   async create(role: any): Promise<Role> {
@@ -28,11 +32,13 @@ export class RolesService {
 
   async update(id: number, role: any): Promise<UpdateResult> {
     this.logger.log('Updating role');
+    await this.checkRoleExist(id);
     return await this.roleRepository.update(id, role);
   }
 
   async delete(id: number): Promise<DeleteResult> {
     this.logger.log('Deleting role');
+    await this.checkRoleExist(id);
     return await this.roleRepository.softDelete(id);
   }
 
@@ -45,5 +51,12 @@ export class RolesService {
 
   async isAllExists(ids: any[]): Promise<boolean> {
     return await this.roleRepository.count({ id: In(ids) }) === ids.length;
+  }
+
+  private async checkRoleExist(id: number) {
+    let isExist = await this.roleRepository.count({ id: id }) === 1;
+    if (!isExist) {
+      throw new NotFoundException('Role is not existed');
+    }
   }
 }

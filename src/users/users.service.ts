@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository, UpdateResult, DeleteResult } from 'typeorm';
@@ -22,7 +22,7 @@ export class UsersService {
   async findOne(id: number): Promise<User> {
     let user = await this.userRepository.findOne(id, { withDeleted: true, relations: ['roles'] })
     if (!user) {
-      throw new BadRequestException('User is not existed');
+      throw new NotFoundException('User is not existed');
     }
     return user;
   }
@@ -66,14 +66,14 @@ export class UsersService {
   private async checkUserExist(id: number) {
     let isExist = await this.userRepository.count({ id: id }) === 1;
     if (!isExist) {
-      throw new BadRequestException('User is not existed');
+      throw new NotFoundException('User is not existed');
     }
   }
 
   private async checkRolesExist(ids: number[]) {
     let isAllRolesExist = await this.rolesService.isAllExists(ids);
     if (!isAllRolesExist) {
-      throw new BadRequestException('Some role is not existed');
+      throw new NotFoundException('Some role is not existed');
     }
   }
 }
