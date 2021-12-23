@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository, UpdateResult, DeleteResult } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import {
   paginate,
   Pagination,
@@ -47,7 +47,8 @@ export class UsersService {
       }
     });
     Object.assign(user, { id, roles: updateRoles })
-    return await this.userRepository.save(user);
+    await this.userRepository.save(user);
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<DeleteResult> {
