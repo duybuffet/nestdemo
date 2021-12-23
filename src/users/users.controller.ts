@@ -69,8 +69,8 @@ export class UsersController {
   @ApiResponse({
     status: 200
   })
-  update(@Param('id', ParseIntPipe) id, @Body() userDto: UpdateUserDto): Promise<any> {
-    return this.usersService.update(id, userDto);
+  update(@Param('id', ParseIntPipe) id, @Body('user') userDto: UpdateUserDto, @Body('roles', new ParseArrayPipe({ items: RoleDto })) rolesDto: RoleDto[]): Promise<any> {
+    return this.usersService.update(id, userDto, rolesDto);
   }
 
   @Delete(':id')
