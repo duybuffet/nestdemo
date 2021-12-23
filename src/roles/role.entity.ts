@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/user.entity';
 
-@Entity("roles")
+@Entity('roles')
 export class Role {
   @ApiProperty()
   @PrimaryGeneratedColumn()
@@ -22,4 +23,7 @@ export class Role {
   @ApiProperty()
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @ManyToMany(type => User, user => user.roles)
+  users?: User[];
 }
