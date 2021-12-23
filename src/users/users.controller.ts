@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, ParseArrayPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, ParseArrayPipe, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
@@ -69,7 +69,11 @@ export class UsersController {
   @ApiResponse({
     status: 200
   })
-  update(@Param('id', ParseIntPipe) id, @Body('user') userDto: UpdateUserDto, @Body('roles', new ParseArrayPipe({ items: RoleDto })) rolesDto: RoleDto[]): Promise<any> {
+  update(@Param(
+    'id', ParseIntPipe) id,
+    @Body('user', new ValidationPipe({ skipUndefinedProperties: true, forbidNonWhitelisted: false })) userDto: UpdateUserDto,
+    @Body('roles', new ParseArrayPipe({ items: RoleDto })) rolesDto: RoleDto[]
+  ): Promise<any> {
     return this.usersService.update(id, userDto, rolesDto);
   }
 

@@ -9,7 +9,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe({
     forbidNonWhitelisted: true,
-    whitelist: true
+    whitelist: true,
   }));
 
   const config = new DocumentBuilder()

@@ -1,16 +1,17 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   firstname: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   lastname: string;
 
   @ApiProperty()
   @IsNumber()
+  @IsOptional()
   age: string;
 }
