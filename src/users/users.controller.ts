@@ -3,9 +3,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
-import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { RoleDto } from './dto/role.dto';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -56,7 +57,28 @@ export class UsersController {
     description: 'The record has been successfully created.',
     type: User,
   })
-  create(@Body('user') userDto: CreateUserDto, @Body('roles', new ParseArrayPipe({ items: RoleDto })) rolesDto: RoleDto[]): any {
+  @ApiBody({
+    description: "The Description for the Post Body.",
+    examples: {
+      default: {
+        value: {
+          user: {
+            "firstname": "string",
+            "lastname": "string",
+            "email": "string@string.com",
+            "age": 20
+          },
+          roles: [{
+            "id": 0
+          }]
+        }
+      }
+    }
+  })
+  create(
+    @Body('user') userDto: CreateUserDto,
+    @Body('roles', new ParseArrayPipe({ items: CreateRoleDto })) rolesDto: CreateRoleDto[]
+  ): any {
     return this.usersService.create(userDto, rolesDto);
   }
 
@@ -64,15 +86,34 @@ export class UsersController {
   @ApiParam({
     name: 'id',
     required: true,
-    type: 'number'
+    type: 'number',
   })
   @ApiResponse({
-    status: 200
+    status: 200,
+    type: User,
+  })
+  @ApiBody({
+    description: "The Description for the Put Body.",
+    examples: {
+      default: {
+        value: {
+          user: {
+            "firstname": "string",
+            "lastname": "string",
+            "age": 20
+          },
+          roles: [{
+            "id": 0,
+            "delete": true
+          }]
+        }
+      }
+    }
   })
   update(@Param(
     'id', ParseIntPipe) id,
     @Body('user', new ValidationPipe({ skipUndefinedProperties: true, forbidNonWhitelisted: false })) userDto: UpdateUserDto,
-    @Body('roles', new ParseArrayPipe({ items: RoleDto })) rolesDto: RoleDto[]
+    @Body('roles', new ParseArrayPipe({ items: UpdateRoleDto })) rolesDto: UpdateRoleDto[]
   ): Promise<any> {
     return this.usersService.update(id, userDto, rolesDto);
   }
