@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { ExcludeNullInterceptor } from './interceptors/exclude-null.interceptor';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +13,8 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     whitelist: true,
   }));
+  app.useGlobalInterceptors(new ExcludeNullInterceptor());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('PoC APIs Docs')
