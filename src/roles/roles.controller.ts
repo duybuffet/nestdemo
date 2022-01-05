@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, UsePipes, ValidationPipe, UseFilters, ForbiddenException } from '@nestjs/common';
 import { UpsertRoleDto } from './dto/upsert-role.dto';
 import { Role } from './role.entity';
 import { RolesService } from './roles.service';
 import { ApiTags, ApiCreatedResponse, ApiOkResponse, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 @ApiTags('roles')
 @Controller('roles')
@@ -45,8 +46,10 @@ export class RolesController {
     required: true,
     type: 'number'
   })
+  // @UseFilters(new HttpExceptionFilter())
   show(@Param('id', new ParseIntPipe()) id): Promise<Role> {
-    return this.rolesService.findOne(id);
+    // return this.rolesService.findOne(id);
+    throw new ForbiddenException();
   }
 
   @Post()
