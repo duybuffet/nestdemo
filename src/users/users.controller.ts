@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, ParseArrayPipe, ValidationPipe, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, DefaultValuePipe, ParseIntPipe, Query, ParseArrayPipe, ValidationPipe, UseInterceptors, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
@@ -8,10 +8,13 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @ApiTags('users')
 @Controller('users')
 @UseInterceptors(TransformInterceptor)
+@UseGuards(RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -30,6 +33,7 @@ export class UsersController {
     type: 'number',
     required: false
   })
+  @Roles('admin')
   index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
